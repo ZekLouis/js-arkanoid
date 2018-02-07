@@ -1,0 +1,84 @@
+<!-- Lundi 12 février Casier / Enseignants-->
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Arkanoid</title>
+    <style>
+        .sprite {
+            position: absolute;
+        }
+
+        .brick.sprite.level-1 {
+            background-color: #e67e22;
+        }
+
+        .brick.sprite.level-2 {
+            background-color: #e74c3c;
+        }
+
+        .brick.sprite.level-3 {
+            background-color: #c0392b;
+        }
+
+        .player.sprite {
+            background-color: #3498db;
+            border-radius: 10px;
+        }
+
+        .ball.sprite {
+            background: #2ecc71;
+            -webkit-border-radius:50%;
+            -moz-border-radius:50%;
+            border-radius:50%;
+        }
+
+        body{
+            margin: 0;
+            padding: 0;
+        }
+
+        #game{
+            position: relative;
+            height: 780px;
+            width: 1024px;
+            margin: auto;
+            background-color: black;
+        }
+
+        .gameover {
+            position: absolute;
+            z-index: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 15%;
+        }
+
+        p {
+            position: absolute;
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+<img src="./assets/img/gameover.png" alt="" class="gameover">
+<p>Vies : <span id="vies">0</span></p>
+
+<div id="game"></div>
+<template class="brick"><div class="brick sprite"></div></template>
+<template class="player"><div class="player sprite"></div></template>
+<template class="ball"><div class="ball sprite"></div></template>
+<script src="js/classes/Entity.js"></script>
+<script src="js/classes/Brick.js"></script>
+<script src="js/classes/Ball.js"></script>
+<script src="js/classes/Player.js"></script>
+<script src="js/classes/Game.js"></script>
+<script src="js/classes/Octopus.js"></script>
+<script src="js/classes/View.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
