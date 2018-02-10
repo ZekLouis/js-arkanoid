@@ -3,7 +3,10 @@ var View = function(){
     this.brick_template = document.querySelector('.brick');
     this.player_template = document.querySelector('.player');
     this.ball_tempalte = document.querySelector('.ball');
-    this.vies = document.querySelector('#vies');
+    this.lives = document.querySelector('.lives');
+    this.level = document.querySelector('.level');
+    this.level_val = document.querySelector('#level');
+    this.win_screen = document.querySelector('.win')
 };
 
 View.prototype.clean = function(){
@@ -11,14 +14,21 @@ View.prototype.clean = function(){
 };
 
 View.prototype.render = function(data) {
-    if(data.running){
-        this.vies.innerText = data.player.lives
+    if(data.running && !data.win){
         this.clean();
+        this.level_val.innerText = data.gameLevel
+        var name = this.lives.classList[1]
+        this.lives.classList.remove(name)
+        this.lives.classList.add('nb-' + data.player.lives)
         this.render_bricks(data.bricks);
         this.render_player(data.player);
         this.render_balls(data.balls)
     } else {
-        this.gameover();
+        if(data.win) {
+            this.win_screen.style.opacity = 1
+        } else {
+            this.gameover();
+        }
     }
 };
 
@@ -40,7 +50,7 @@ View.prototype.render_balls = function(balls) {
 
 View.prototype.render_element = function(element, template){
     var new_element = document.importNode(template.content, true);
-    var el = new_element.querySelector('div.sprite');
+    var el = new_element.querySelector('.sprite');
 
     el.style.width = element.width+"px";
     el.style.height = element.height+"px";
@@ -56,4 +66,8 @@ View.prototype.render_element = function(element, template){
 View.prototype.gameover = function(){
     var gameover = document.querySelector(".gameover");
     gameover.style.zIndex = 1;
+};
+
+View.prototype.hideLevel = function() {
+    this.level.classList.add('hidden')
 };

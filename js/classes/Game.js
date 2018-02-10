@@ -2,34 +2,48 @@ var Game = function(){
     var self = this;
     this.config = {
         height: 780,
-        width: 1024,
+        width: 655,
         reverse: false,
-        gameLevel: 1,
         player: {
             height: 20,
-            width: 100,
-            speed: 20
+            width: 150,
+            speed: 10,
+            center_zone: 50
         },
         ball: {
             height: 10,
             width: 10,
-            speed: 1
+            speed: 7
         },
         marginBottom: 5
     };
 
     this.data = {
+        gameLevel: 6,
         bricks: [],
         balls: [],
         player: new Player((self.config.width / 2 - self.config.player.width/2), (self.config.height - self.config.player.height - self.config.marginBottom), self.config.player.width, self.config.player.height),
-        running: true
+        running: true,
+        win: false
     };
 };
 
 Game.prototype.continue = function(){
     // check if game is done
-    if(!this.data.running)
+
+    if(!this.data.running || this.data.win)
         return;
+
+    var end = true
+    for(var brick in this.data.bricks){
+        if (this.data.bricks[brick].level !== 4) {
+            end = false
+        }
+    }
+
+    if (end) {
+        this.nextLevel()
+    }
 
     for(var ball in this.data.balls){
         var ballobj = this.data.balls[ball];
@@ -42,15 +56,15 @@ Game.prototype.continue = function(){
         }
 
         if (ballobj.y <= 0) {
-            ballobj.vy = Math.abs(ballobj.vy)
+            ballobj.vy = -(ballobj.vy)
         } else if (ballobj.y + ballobj.height >= this.config.height) {
             if (this.data.balls.length <= 1) {
                 if (this.data.player.lives === 1) {
                     this.data.running = false
                 } else {
-                    this.data.player.lives --;
-                    ballobj.vy = -(Math.abs(ballobj.vy))
-                    //this.init();
+                    this.data.player.lives--;
+                    // ballobj.vy = -(Math.abs(ballobj.vy))
+                    this.init();
                 }
             } else {
                 if (ballobj.y + ballobj.height >= this.config.height) {
@@ -58,7 +72,6 @@ Game.prototype.continue = function(){
                 }
             }
         }
-
 
         if (typeof this.data.balls[ball] !== 'undefined') {
             this.data.balls[ball].update();
@@ -68,8 +81,17 @@ Game.prototype.continue = function(){
             this.col(ball,brick);
         }
 
-        if (this.col_object(ballobj, this.data.player)) {
+        if (this.col_object(ballobj, this.data.player) === 'bottom' && !ballobj.sticky) {
             ballobj.vy = -(Math.abs(ballobj.vy))
+            var center_ball = ballobj.x + ( ballobj.width / 2 );
+            var center_player = this.data.player.x + ( this.data.player.width / 2);
+            if (center_ball > center_player + this.config.player.center_zone / 2) {
+                ballobj.vx = this.config.ball.speed / 3
+            } else if (center_ball < center_player - this.config.player.center_zone / 2) {
+                ballobj.vx = -(this.config.ball.speed / 3)
+            } else {
+                ballobj.vx = 0
+            }
         }
 
         /* if (ballobj.y + ballobj.height >= this.config.height) {
@@ -77,9 +99,20 @@ Game.prototype.continue = function(){
         } */
     }
 
-    if (this.data.player.x < 0 || this.data.player.x + this.data.player.width > this.config.width) {
+    if (this.data.player.x < 0) {
         this.data.player.setVelocity(0, 0);
+        this.data.player.x = 1;
+        for(var ball in this.data.balls) {
+            this.data.balls[ball].vx = this.data.balls[ball].sticky ? 0 : this.data.balls[ball].vx;
+        }
+    } else if (this.data.player.x + this.data.player.width > this.config.width) {
+        this.data.player.setVelocity(0, 0);
+        this.data.player.x = this.config.width - 1 - this.data.player.width;
+        for(var ball in this.data.balls) {
+            this.data.balls[ball].vx = this.data.balls[ball].sticky ? 0 : this.data.balls[ball].vx;
+        }
     }
+    // console.log(this.data.player)
     this.data.player.update()
 };
 
@@ -88,26 +121,25 @@ Game.prototype.col = function(iball, ibrick){
     var ball = this.data.balls[iball];
 
     if(typeof ball !== "undefined"){
-        var collision = this.col_object(brick, ball);
+        var collision = this.col_object(ball, brick);
         if(collision !== 'none') {
-            console.log(collision);
             if(ibrick > -1){
-                if (brick.level === 1) {
-                    this.data.bricks.splice(ibrick, 1);
-                } else {
-                    this.data.bricks[ibrick].downLevel()
-                }
                 if(collision === 'bottom' || collision === 'top') {
                     this.data.balls[iball].vy = -this.data.balls[iball].vy;
                 } else if (collision === 'left' || collision === 'right'){
                     this.data.balls[iball].vx = -this.data.balls[iball].vx;
+                }
+                if (brick.level === 1) {
+                    this.data.bricks.splice(ibrick, 1);
+                } else if (brick.level !== 4) {
+                    this.data.bricks[ibrick].downLevel()
                 }
             }
         }
     }
 };
 
-Game.prototype.col_object = function(r1, r2) {
+Game.prototype.col_object = function(r2, r1) {
     /* return !(
     ((a.y + a.height) < (b.y)) ||
     (a.y > (b.y + b.height)) ||
@@ -138,15 +170,17 @@ Game.prototype.start = function() {
 
 Game.prototype.generateBricks = function(){
     var self = this;
-    switch (self.config.gameLevel) {
+    switch (self.data.gameLevel) {
         default:
         case 1:
-            var config = levels[self.config.gameLevel];
+            var config = levels[self.data.gameLevel];
             for(var j = 0; j < config.length; j++) {
                 var row = config[j];
                 for(var i = 0; i < row.length; i++) {
                     var level = row[i];
-                    self.data.bricks.push(new Brick(i*100 + 25, j*50 + 20, 70, 30, level));
+                    if (level !== 0) {
+                        self.data.bricks.push(new Brick(i*80 + 10, j*40 + 10, 70, 30, level));
+                    }
                 }
             }
             break;
@@ -158,11 +192,11 @@ Game.prototype.clean = function() {
 };
 
 Game.prototype.init = function() {
-    console.log('azer')
     var self = this;
     self.clean();
-    self.generateBall();
     self.data.player.setCoord((self.config.width / 2 - self.config.player.width/2), (self.config.height - self.config.player.height - self.config.marginBottom), self.config.player.width, self.config.player.height);
+    self.data.player.setVelocity(0,0);
+    self.generateBall();
 };
 
 Game.prototype.generateBall = function() {
@@ -173,7 +207,13 @@ Game.prototype.generateBall = function() {
 };
 
 Game.prototype.nextLevel = function() {
-    this.config.gameLevel++;
+    this.data.gameLevel++;
+    if (this.data.gameLevel > 6) {
+        this.data.win = true
+    } else {
+        this.init();
+        this.generateBricks();
+    }
 };
 
 Game.prototype.playerLeft = function() {
@@ -186,7 +226,6 @@ Game.prototype.playerLeft = function() {
 
             if (ballobj.sticky) {
                 ballobj.setXY(this.data.player.x + this.data.player.width/2 - ballobj.width/2, this.data.player.y - ballobj.height)
-                ballobj.setVelocity(this.data.player.vx, this.data.player.vy)
             }
 
             this.data.balls[ball] = ballobj;
@@ -204,7 +243,6 @@ Game.prototype.playerRight = function() {
 
             if (ballobj.sticky) {
                 ballobj.setXY(this.data.player.x + this.data.player.width/2 - ballobj.width/2, this.data.player.y - ballobj.height)
-                ballobj.setVelocity(this.data.player.vx, this.data.player.vy)
             }
 
             this.data.balls[ball] = ballobj;
@@ -212,12 +250,25 @@ Game.prototype.playerRight = function() {
     }
 };
 
+Game.prototype.stopPlayer = function () {
+    this.data.player.setVelocity(0,0);
+    for(var ball in this.data.balls){
+        var ballobj = this.data.balls[ball];
+
+        if (ballobj.sticky) {
+            ballobj.setXY(this.data.player.x + this.data.player.width/2 - ballobj.width/2, this.data.player.y - ballobj.height)
+        }
+
+        this.data.balls[ball] = ballobj;
+    }
+};
+
 Game.prototype.enableBonuses = function () {
     for(var ball in this.data.balls){
         if (this.data.balls[ball].sticky) {
             this.data.balls[ball].sticky = false;
-            this.data.balls[ball].vx = 10;
-            this.data.balls[ball].vy = -10;
+            this.data.balls[ball].vx = this.config.ball.speed / 3;
+            this.data.balls[ball].vy = -this.config.ball.speed;
         }
     }
 };

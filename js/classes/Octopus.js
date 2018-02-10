@@ -6,17 +6,18 @@ var Octopus = function(game, view){
     document.addEventListener('keydown', function(ev){
         switch (ev.keyCode){
             case 39:
-                // ev.preventDefault();
+                ev.preventDefault();
                 self.game.playerRight();
                 break;
 
             case 37:
-                // ev.preventDefault();
+                ev.preventDefault();
                 self.game.playerLeft();
                 break;
 
             case 32:
                 self.game.enableBonuses();
+                self.view.hideLevel();
                 break;
 
             case 87:
@@ -27,14 +28,9 @@ var Octopus = function(game, view){
 
     document.addEventListener('keyup', function(ev){
         switch (ev.key){
-            case 39:
-                // ev.preventDefault();
-                self.game.playerRight();
-                break;
-
-            case 37:
-                // ev.preventDefault();
-                self.game.playerLeft();
+            case 'ArrowLeft':
+            case 'ArrowRight':
+                self.game.stopPlayer();
                 break;
         }
     }, false);

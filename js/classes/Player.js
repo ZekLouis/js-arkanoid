@@ -18,7 +18,7 @@ Player.prototype.move = function(dir, x) {
 };
 
 Player.prototype.update = function() {
-    this.vx *= 0.95;
+    // this.vx *= 0.8;
     this.x += this.vx;
 };
 
