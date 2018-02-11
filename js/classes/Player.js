@@ -1,25 +1,22 @@
 var Player = function(x, y, width, height) {
     Entity.call(this, x, y, width, height);
     this.lives = 3;
+    this.factor = 1;
+    this.shooter = false;
 };
 
 Player.prototype = Object.create(Entity.prototype);
 
 Player.prototype.constructor = Player;
 
-Player.prototype.move = function(dir, x) {
-    if(dir === "-"){
-        this.vx -= x;
-        this.vx = Math.max(-10, this.vx);
-    }else{
-        this.vx += x;
-        this.vx = Math.min(10, this.vx);
-    }
+Player.prototype.move = function(x) {
+    this.vx += x;
+    this.vx = Math.max(-10, this.vx);
 };
 
 Player.prototype.update = function() {
     // this.vx *= 0.8;
-    this.x += this.vx;
+    this.x += this.vx * this.factor;
 };
 
 Player.prototype.setVelocity = function(x,y) {

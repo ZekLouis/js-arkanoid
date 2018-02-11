@@ -8,10 +8,6 @@ Ball.prototype = Object.create(Entity.prototype);
 Ball.prototype.constructor = Ball;
 
 Ball.prototype.update = function() {
-    if(this.sticky) {
-        this.vx *= 0.95;
-        this.vy *= 0.95;
-    }
     this.x += this.vx;
     this.y += this.vy;
 };

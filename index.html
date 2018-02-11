@@ -7,149 +7,52 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Arkanoid</title>
-    <style>
-        @font-face {
-            font-family: 'Slitter';
-            src: url('./assets/fonts/Slitter.otf');
-        }
-
-        .sprite {
-            position: absolute;
-        }
-
-        .brick.sprite {
-            border: 2px solid black;
-        }
-
-        .brick.sprite.level-1 {
-            background-color: #41A1F8;
-        }
-
-        .brick.sprite.level-2 {
-            background-color: #F3FD53;
-        }
-
-        .brick.sprite.level-3 {
-            background-color: #EC3323;
-        }
-
-        .brick.sprite.level-4 {
-            background-color: #969896;
-        }
-
-        .player.sprite {
-        }
-
-        .ball.sprite {
-            background: #2ecc71;
-            -webkit-border-radius:50%;
-            -moz-border-radius:50%;
-            border-radius:50%;
-            border: 1px solid black;
-        }
-
-        body{
-            margin: 0;
-            padding: 0;
-            background-color: black;
-        }
-
-        #game{
-            position: relative;
-            height: 780px;
-            width: 655px;
-            margin: auto;
-            background-color: #1423BE;
-            border: 5px solid #969896;
-        }
-
-        .gameover {
-            position: absolute;
-            z-index: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 15%;
-        }
-
-        .logo {
-            height: 100px;
-            /* float: left; */
-            display: inline-block;
-        }
-
-        div.lives {
-            display: inline-block;
-        }
-
-        div.lives img {
-            height: 50px;
-        }
-
-        div.lives.nb-0 img {
-            display: none;
-        }
-
-        div.lives.nb-1 img:nth-child(2), div.lives.nb-1 img:nth-child(3) {
-            display: none;
-        }
-
-        div.lives.nb-2 img:nth-child(3) {
-            display: none;
-        }
-
-        .level {
-            color: white;
-            position: absolute;
-            z-index: 1;
-            left: 50%;
-            top: 70%;
-            transform: translateX(-50%);
-            font-size: 50px;
-            font-family: 'Slitter';
-            opacity: 1;
-            transition: 2s all ease-in-out;
-            /*letter-spacing: 3px;*/
-        }
-
-        .level.hidden {
-            opacity: 0;
-        }
-
-        .win {
-            z-index: 2;
-            opacity: 0;
-            height: 100%;
-            position: absolute;
-            overflow: hidden;
-        }
-
-    </style>
+    <link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
-<img src="./assets/img/bluescreen.png" alt="You Win" class="win">
-<div class="header">
-    <img src="./assets/img/arkanoid.png" alt="Arkanoid" class="logo">
-    <div class="lives nb-1">
-        <img src="./assets/img/health.png" alt="Health">
-        <img src="./assets/img/health.png" alt="Health">
-        <img src="./assets/img/health.png" alt="Health">
+    <img src="./assets/img/winscreen.png" alt="You Win" class="win">
+    <div class="header">
+        <img src="./assets/img/arkanoid.png" alt="Arkanoid" class="logo">
+        <div class="lives nb-1">
+            <img src="./assets/img/health.png" alt="Health">
+            <img src="./assets/img/health.png" alt="Health">
+            <img src="./assets/img/health.png" alt="Health">
+        </div>
+        <ul>
+            <li>Last bonuses</li>
+            <li id="bon-1"></li>
+            <li id="bon-2"></li>
+            <li id="bon-3"></li>
+            <li id="bon-4"></li>
+        </ul>
     </div>
-</div>
 
-<div class="level"><p>Level <span id="level"></span></p></div>
-<img src="./assets/img/gameover.png" alt="Game Over" class="gameover">
-<div id="game"></div>
-<template class="brick"><div class="brick sprite"></div></template>
-<template class="player"><img class="player sprite" src="./assets/img/player.png" alt=""></template>
-<template class="ball"><div class="ball sprite"></div></template>
-<script src="js/classes/Entity.js"></script>
-<script src="js/classes/Brick.js"></script>
-<script src="js/classes/Ball.js"></script>
-<script src="js/classes/Player.js"></script>
-<script src="js/classes/Game.js"></script>
-<script src="js/classes/Octopus.js"></script>
-<script src="js/classes/View.js"></script>
-<script src="js/levels.js"></script>
-<script src="js/main.js"></script>
+    <div class="level"><p>Level <span id="level"></span></p></div>
+    <img src="./assets/img/gameover.png" alt="Game Over" class="gameover">
+    <div id="game"></div>
+
+    <!-- TEMPLATES -->
+    <template class="brick"><div class="brick sprite"></div></template>
+    <template class="player"><img class="player sprite" src="./assets/img/player.png" alt="Player"></template>
+    <template class="ball"><div class="ball sprite"></div></template>
+    <template class="bonus"><div class="bonus sprite"></div></template>
+    <template class="malus"><div class="malus sprite"></div></template>
+    <template class="missile"><div class="missile sprite"></div></template>
+    <template class="bomb"><img class="bomb sprite" src="./assets/img/bomb.png" alt="Bomb"></template>
+
+    <!-- JS FILES -->
+    <script src="js/config.js"></script>
+    <script src="js/classes/Entity.js"></script>
+    <script src="js/classes/Brick.js"></script>
+    <script src="js/classes/Ball.js"></script>
+    <script src="js/classes/Bomb.js"></script>
+    <script src="js/classes/Malus.js"></script>
+    <script src="js/classes/Bonus.js"></script>
+    <script src="js/classes/Player.js"></script>
+    <script src="js/classes/Game.js"></script>
+    <script src="js/classes/Octopus.js"></script>
+    <script src="js/classes/View.js"></script>
+    <script src="js/levels.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

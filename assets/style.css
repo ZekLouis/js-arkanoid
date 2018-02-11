@@ -1,0 +1,141 @@
+
+@font-face {
+    font-family: 'Slitter';
+    src: url('./fonts/Slitter.otf');
+}
+
+.sprite {
+    position: absolute;
+}
+
+.brick.sprite {
+    border: 2px solid black;
+}
+
+.brick.sprite.level-1 {
+    background-color: #41A1F8;
+}
+
+.brick.sprite.level-2 {
+    background-color: #F3FD53;
+}
+
+.brick.sprite.level-3 {
+    background-color: #EC3323;
+}
+
+.brick.sprite.level-4 {
+    background-color: #969896;
+}
+
+.player.sprite {
+}
+
+.ball.sprite {
+    background: #2ecc71;
+    -webkit-border-radius:50%;
+    -moz-border-radius:50%;
+    border-radius:50%;
+    border: 1px solid black;
+}
+
+.bonus.sprite {
+    background: #2ecc71;
+    border: 1px solid black;
+}
+
+.malus.sprite {
+    background: #EC3323;
+    border: 1px solid black;
+}
+
+.missile.sprite {
+    background: #EC3323;
+    border: 1px solid black;
+    border-radius: 10px 10px 0px 0px;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    background-color: black;
+}
+
+#game{
+    position: relative;
+    height: 780px;
+    width: 655px;
+    margin: auto;
+    background-color: #1423BE;
+    border: 5px solid #969896;
+}
+
+.gameover {
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 15%;
+}
+
+.logo {
+    height: 100px;
+    /* float: left; */
+    display: inline-block;
+}
+
+div.lives {
+    display: inline-block;
+}
+
+div.lives img {
+    height: 50px;
+}
+
+div.lives.nb-0 img {
+    display: none;
+}
+
+div.lives.nb-1 img:nth-child(2), div.lives.nb-1 img:nth-child(3) {
+    display: none;
+}
+
+div.lives.nb-2 img:nth-child(3) {
+    display: none;
+}
+
+.level {
+    color: white;
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 70%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    font-family: 'Slitter';
+    opacity: 1;
+    transition: 2s all ease-in-out;
+    /*letter-spacing: 3px;*/
+}
+
+.level.hidden {
+    opacity: 0;
+}
+
+.win {
+    z-index: 2;
+    opacity: 0;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+}
+
+ul {
+    display: inline-block;
+    color: white;
+    list-style-type: none;
+    margin: 0;
+    padding-bottom: 5px;
+    font-family:sans-serif;
+    letter-spacing:2px;
+}

@@ -16,6 +16,7 @@ var Octopus = function(game, view){
                 break;
 
             case 32:
+                ev.preventDefault();
                 self.game.enableBonuses();
                 self.view.hideLevel();
                 break;
