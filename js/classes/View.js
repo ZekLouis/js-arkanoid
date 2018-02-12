@@ -28,6 +28,7 @@ View.prototype.clean = function(){
 
 View.prototype.render = function(data) {
     if(data.running && !data.win){
+        // display level if not in pause
         if(data.stop) {
             this.level.classList.remove('hidden')
         } else {
@@ -88,6 +89,10 @@ View.prototype.render_bonus = function(bonus) {
     }
 };
 
+/**
+ * Append last 4 bonuses to li elements
+ * @param texts the list of bonuses
+ */
 View.prototype.render_bonuses_text = function(texts) {
     if(typeof texts[texts.length - 1] !== 'undefined') {
         this.text_1.innerText = texts[texts.length - 1]

@@ -1,9 +1,16 @@
 var Game = function(){
     var self = this;
+    /**
+     * Game config available in config.js
+     */
     this.config = config;
 
+    /**
+     * Data is the data that will be shared with the view through Octopus
+     * @type {{gameLevel: number, bricks: Array, balls: Array, bombs: Array, bonus: Array, malus: Array, bonuses_text: Array, player: Player, running: boolean, win: boolean, stop: boolean}}
+     */
     this.data = {
-        gameLevel: 1,
+        gameLevel: 4,
         bricks: [],
         balls: [],
         bombs: [],
@@ -17,12 +24,15 @@ var Game = function(){
     };
 };
 
+/**
+ * This function is called by requestAnimationFrame so a lot of time in a sec (depends on your computer)
+ */
 Game.prototype.continue = function(){
     // check if game is over or the game is win
     if(!this.data.running || this.data.win)
         return;
 
-    // if there is bricks which are not level 4 the level is not over
+    // check if the level is ended or if there is a pause (a death for example)
     if (this.levelEnded() === true && !this.data.stop) {
         this.nextLevel()
     }
@@ -30,9 +40,11 @@ Game.prototype.continue = function(){
     // check for every ball
     for(var ball in this.data.balls){
         var ballobj = this.data.balls[ball];
+        // if this ball has been remove go to the next ball
         if (typeof  ballobj === 'undefined') {
             break
         }
+
         // if the ball is stick to the player set the x and y same as the player
         if (ballobj.sticky && !ballobj.shooter) {
             ballobj.setXY(this.data.player.x + this.data.player.width/2 - ballobj.width/2, this.data.player.y - ballobj.height);
@@ -51,15 +63,19 @@ Game.prototype.continue = function(){
             this.col(ball,brick);
         }
 
+        // if the ball has not been shoot by the player check the collision between the player and the classical ball
         if (!ballobj.shooter) {
             this.ballCollidePlayer(ballobj);
         }
     }
 
+    // Checking for bombs
     for(var bomb in this.data.bombs){
+        // remove it if out of the frame
         if (this.data.bombs[bomb].y + this.data.bombs[bomb].height > this.config.height) {
             this.data.bombs.splice(bomb, 1);
         } else {
+            // check collision between bombs and player
             var collision = this.col_object(this.data.bombs[bomb], this.data.player);
             this.data.bombs[bomb].update();
             if(collision !== 'none' && bomb > -1) {
@@ -70,6 +86,7 @@ Game.prototype.continue = function(){
         }
     }
 
+    // Checking for bonuses
     for(var bon in this.data.bonus){
         if (this.data.bonus[bon].y + this.data.bonus[bon].height > this.config.height) {
             this.data.bonus.splice(bon, 1);
@@ -83,6 +100,7 @@ Game.prototype.continue = function(){
         }
     }
 
+    // Checking for maluses
     for(var mal in this.data.malus){
         if (this.data.malus[mal].y + this.data.malus[mal].height > this.config.height) {
             this.data.malus.splice(mal, 1);
@@ -112,6 +130,11 @@ Game.prototype.continue = function(){
     this.data.player.update()
 };
 
+/**
+ * Test collision between ball and brick
+ * @param iball
+ * @param ibrick
+ */
 Game.prototype.col = function(iball, ibrick){
     var brick = this.data.bricks[ibrick];
     var ball = this.data.balls[iball];
@@ -140,6 +163,12 @@ Game.prototype.col = function(iball, ibrick){
     }
 };
 
+/**
+ * Check collision between 2 objects
+ * @param r2 obj 1
+ * @param r1 obj 2
+ * @returns {string} top, bottom, left, right or none regarding to the result of the collision
+ */
 Game.prototype.col_object = function(r2, r1) {
     var dx=(r1.x+r1.width/2)-(r2.x+r2.width/2);
     var dy=(r1.y+r1.height/2)-(r2.y+r2.height/2);
@@ -158,6 +187,9 @@ Game.prototype.col_object = function(r2, r1) {
     return(collision);
 };
 
+/**
+ * Function called at the beginning of a level
+ */
 Game.prototype.start = function() {
     this.generateBricks();
     this.generateBall();
@@ -165,20 +197,15 @@ Game.prototype.start = function() {
 
 Game.prototype.generateBricks = function(){
     var self = this;
-    switch (self.data.gameLevel) {
-        default:
-        case 1:
-            var config = levels[self.data.gameLevel];
-            for(var j = 0; j < config.length; j++) {
-                var row = config[j];
-                for(var i = 0; i < row.length; i++) {
-                    var level = row[i];
-                    if (level !== 0) {
-                        self.data.bricks.push(new Brick(i*80 + 10, j*40 + 10, 70, 30, level));
-                    }
-                }
+    var config = levels[self.data.gameLevel];
+    for(var j = 0; j < config.length; j++) {
+        var row = config[j];
+        for(var i = 0; i < row.length; i++) {
+            var level = row[i];
+            if (level !== 0) {
+                self.data.bricks.push(new Brick(i*80 + 10, j*40 + 10, 70, 30, level));
             }
-            break;
+        }
     }
 };
 
@@ -186,6 +213,11 @@ Game.prototype.clean = function() {
     this.data.balls = [];
 };
 
+/**
+ * init the position of the player and his velocity
+ * clean the balls
+ * add new ball
+ */
 Game.prototype.init = function() {
     this.data.stop = true;
     var self = this;
@@ -202,6 +234,9 @@ Game.prototype.generateBall = function() {
     this.data.balls.push(new Ball(ballx, bally, self.config.ball.width, self.config.ball.height))
 };
 
+/**
+ * Change config level and generate the new level and clean
+ */
 Game.prototype.nextLevel = function() {
     this.data.gameLevel++;
     if (this.data.gameLevel > 6) {
@@ -233,10 +268,6 @@ Game.prototype.playerRight = function() {
     if (this.data.player.x + this.data.player.width < this.config.width) {
         this.data.player.move(this.config.player.speed);
     }
-};
-
-Game.prototype.stopPlayer = function () {
-    this.data.player.setVelocity(0,0);
 };
 
 Game.prototype.enableBonuses = function () {
@@ -285,8 +316,8 @@ Game.prototype.ballOutOfTheFrame = function(ballobj, ball) {
         }
     } else if (ballobj.y + ballobj.height >= this.config.height) {
         var size = 0;
-        for (var ball in this.data.balls) {
-            if (!this.data.balls[ball].shooter) {
+        for (var iiball in this.data.balls) {
+            if (!this.data.balls[iiball].shooter) {
                 size++
             }
         }
@@ -322,7 +353,6 @@ Game.prototype.ballCollidePlayer = function(ballobj) {
 };
 
 Game.prototype.spawnItem = function(brick) {
-    var self = this;
     var rand = Math.random();
     if (rand > 0.90) {
         this.data.bombs.push(new Bomb((brick.x + brick.width / 2) , (brick.y + brick.height / 2), 0, this.config.ball.speed * 1.25, 20, 20))
@@ -333,6 +363,9 @@ Game.prototype.spawnItem = function(brick) {
     }
 };
 
+/**
+ * Pick a bonus from available bonuses
+ */
 Game.prototype.pickBonus = function() {
     var self = this;
     var bonus = this.config.bonus_list[Math.floor(Math.random()*this.config.bonus_list.length)];
@@ -375,6 +408,9 @@ Game.prototype.pickBonus = function() {
     console.log(bonus)
 };
 
+/**
+ * Same as Bonuses
+ */
 Game.prototype.pickMalus = function() {
     var self = this;
     var malus = this.config.malus_list[Math.floor(Math.random()*this.config.malus_list.length)];
@@ -416,4 +452,8 @@ Game.prototype.pickMalus = function() {
             break;
     }
     console.log(malus)
+};
+
+Game.prototype.stopPlayer = function() {
+    this.data.player.setVelocity(0,0)
 };
