@@ -10,7 +10,7 @@ var Game = function(){
      * @type {{gameLevel: number, bricks: Array, balls: Array, bombs: Array, bonus: Array, malus: Array, bonuses_text: Array, player: Player, running: boolean, win: boolean, stop: boolean}}
      */
     this.data = {
-        gameLevel: 4,
+        gameLevel: 1,
         bricks: [],
         balls: [],
         bombs: [],
